@@ -78,7 +78,7 @@ The argument should be a list of pairs of the form (choice . weight)."
     (pop-to-buffer buf)))
 
 (defun luggage-mondrian ()
-  "Produce a random Mondrian-like image."
+  "Produce a random image similar to a Mondrian composition."
   (interactive)
   (let* ((w 400) (h 400) (mw 70) (mh 70) (sw (/ w 2)) (sh (/ h 2))
          (svg (svg-create w h)))
@@ -111,6 +111,30 @@ The argument should be a list of pairs of the form (choice . weight)."
                          (canvas x y c d)))))))
       (canvas 0 0 w h)
       (luggage--show "Mondrian" svg))))
+
+(defun luggage-mondrian-new-york-city ()
+  "Generate a random image similar to Mondrian's New York City I."
+  (interactive)
+  (let* ((s 400) (l 10) (n (+ 5 (random 4)))
+         (xs (list 0 s)) (ys (list 0 s))
+         (svg (svg-create s s :stroke-width l))
+         (colors (cl-remove "white" luggage-mondrian-colors
+                            :key #'car :test #'equal)))
+    (dotimes (_ n)
+      (cl-flet
+          ((rnd (ns)
+             (cl-loop for x = (/ (expt (/ (random 1001) 1000.0) 2) 2)
+                   for r = (floor (* s (if (= (random 2) 0) x (- 1 x))))
+                   until (> (or (cl-loop for n in ns minimize (abs (- n r)))
+                                (1+ l))
+                            l)
+                   finally (return (cons r ns)))))
+        (let ((c (luggage--sample colors)))
+          (setq xs (rnd xs) ys (rnd ys))
+          (let ((x (car xs)) (y (car ys)))
+            (svg-line svg x 0 x s :stroke c)
+            (svg-line svg 0 y s y :stroke c)))))
+    (luggage--show "Mondrian New York City" svg)))
 
 (defun luggage-10-print ()
   "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
