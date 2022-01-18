@@ -37,7 +37,20 @@
     ("blue" . 1)
     ("yellow" . 1))
   "Weighted list of colors to use in `luggage-mondrian'."
-  :type '(alist ))
+  :type '(choice
+          (const :tag "Classic"
+                 (("white" . 3)
+                  ("red" . 1)
+                  ("blue" . 1)
+                  ("yellow" . 1)))
+          (const :tag "Stained glass"
+                 (("#dc147b" . 1)
+                  ("#f683c4" . 1)
+                  ("#ae0464" . 1)
+                  ("#6094a0" . 1)
+                  ("#9ecbca" . 1)
+                  ("#484269" . 1)))
+          (alist :key-type string :value-type integer)))
 
 (defun luggage--sample (choices)
   "Return a random selection from the weighted CHOICES.
