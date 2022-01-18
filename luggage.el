@@ -1,8 +1,32 @@
-;; -*- lexical-binding: t; -*-
+;;; luggage.el --- Largely Undesired Gadget: Generative Art Gallery for Emacs  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2022  Omar Antolín Camarena
+
+;; Author: Omar Antolín Camarena;; -*- lexical-binding: t; -*- <omar@matem.unam.mx>
+;; Keywords: games, hypermedia, hypermedia, hypermedia
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Commands to generate pretty SVGs with some element of randomness.
+
+;;; Code:
 
 (require 'svg)
 
-(defun mondrian ()
+(defun lugagge-mondrian ()
   "Produce a random Mondrian-like image."
   (interactive)
   (let* ((w 400) (h 400) (mw 70) (mh 70) (sw (/ w 2)) (sh (/ h 2))
@@ -43,3 +67,7 @@
       (let ((buf (get-buffer-create "*Mondrian*")))
         (with-current-buffer buf (svg-insert-image svg))
         (pop-to-buffer buf)))))
+
+(provide 'luggage)
+;;; luggage.el ends here
+
