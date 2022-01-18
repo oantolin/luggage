@@ -112,5 +112,19 @@ The argument should be a list of pairs of the form (choice . weight)."
       (canvas 0 0 w h)
       (luggage--show "Mondrian" svg))))
 
+(defun luggage-10-print ()
+  "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
+  (interactive)
+  (let ((svg (svg-create 400 400
+                         :stroke-width 3
+                         :stroke-linecap "round"
+                         :stroke-color "black")))
+    (dotimes (x 40)
+      (dotimes (y 40)
+        (if (= (random 2) 0)
+            (svg-line svg (* 10 x) (* 10 y) (* 10 (1+ x)) (* 10 (1+ y)))
+          (svg-line svg (* 10 x) (* 10 (1+ y)) (* 10 (1+ x)) (* 10 y)))))
+    (luggage--show "10-PRINT" svg)))
+
 (provide 'luggage)
 ;;; luggage.el ends here
