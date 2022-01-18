@@ -36,7 +36,7 @@
       (image-mode))
     (pop-to-buffer buf)))
 
-(defun lugagge-mondrian ()
+(defun luggage-mondrian ()
   "Produce a random Mondrian-like image."
   (interactive)
   (let* ((w 400) (h 400) (mw 70) (mh 70) (sw (/ w 2)) (sh (/ h 2))
