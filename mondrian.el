@@ -1,0 +1,43 @@
+;; -*- lexical-binding: t; -*-
+
+(defun mondrian ()
+  "Produce a random Mondrian-like image."
+  ;; TODO refactor
+  (interactive)
+  (require 'svg)
+  (let* ((w 400) (h 400) (mw 70) (mh 70)
+         (svg (svg-create w h :stroke-color "black" :stroke-width 5)))
+    (cl-labels ((canvas (a b c d)
+                  (let ((w (- c a)) (h (- d b)))
+                    (cond
+                      ((and (< w mw) (< h mh))
+                       (svg-rectangle svg a b w h
+                                      :fill (pcase (random 6)
+                                              ((or 0 1 2) "white")
+                                              (3 "yellow")
+                                              (4 "red")
+                                              (5 "blue"))))
+                      ((< w mw)
+                       (let* ((p (/ (+ 33 (random 35)) 100.0))
+                              (y (floor (+ (* p b) (* (- 1 p) d)))))
+                         (svg-line svg a y c y)
+                         (canvas a b c y)
+                         (canvas a y c d)))
+                      ((< h mh)
+                       (let* ((p (/ (+ 33 (random 35)) 100.0))
+                              (x (floor (+ (* p a) (* (- 1 p) c)))))
+                         (canvas a b x d)
+                         (canvas x b c d)))
+                      (t
+                       (let* ((p (/ (+ 33 (random 35)) 100.0))
+                              (q (/ (+ 33 (random 35)) 100.0))
+                              (x (floor (+ (* p a) (* (- 1 p) c))))
+                              (y (floor (+ (* p c) (* (- 1 q) d)))))
+                         (canvas a b x y)
+                         (canvas x b c y)
+                         (canvas a y x d)
+                         (canvas x y c d)))))))
+      (canvas 0 0 w h)
+      (let ((buf (get-buffer-create "*Mondrian*")))
+        (with-current-buffer buf (svg-insert-image svg))
+        (pop-to-buffer buf)))))
