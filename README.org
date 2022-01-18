@@ -1,0 +1,7 @@
+#+title: Luggage
+
+Luggage is a Generative Art Gallery for Emacs.
+
+It will eventually contain several commands to generate pretty SVGs,
+but for now it just contains an unconvincing random Mondrian-like
+painting generator.
