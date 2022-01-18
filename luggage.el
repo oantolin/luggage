@@ -28,11 +28,16 @@
 
 (defun luggage--show (name svg)
   "Display SVG in a buffer called NAME."
-  (let ((buf (get-buffer-create "*Mondrian*")))
+  (let ((buf (get-buffer-create (format "*%s*" name))))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (erase-buffer)
         (svg-print svg))
+      (setq revert-buffer-function
+            (let ((cmd (intern
+                        (format "luggage-%s"
+                                (downcase (string-replace " " "-" name))))))
+              (lambda (_ignore-auto _confirm) (funcall cmd))))
       (image-mode))
     (pop-to-buffer buf)))
 
@@ -74,7 +79,7 @@
                          (canvas a y x d)
                          (canvas x y c d)))))))
       (canvas 0 0 w h)
-      (luggage--show "*Mondrian*" svg))))
+      (luggage--show "Mondrian" svg))))
 
 (provide 'luggage)
 ;;; luggage.el ends here
