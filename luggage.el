@@ -25,6 +25,29 @@
 ;;; Code:
 
 (require 'svg)
+(require 'cl-lib)
+
+(defgroup luggage nil
+  "Largely Undesired Gadget: Generative Art Gallery for Emacs"
+  :group 'games)
+
+(defcustom luggage-mondrian-colors
+  '(("white" . 3)
+    ("red" . 1)
+    ("blue" . 1)
+    ("yellow" . 1))
+  "Weighted list of colors to use in `luggage-mondrian'."
+  :type '(alist ))
+
+(defun luggage--sample (choices)
+  "Return a random selection from the weighted CHOICES.
+The argument should be a list of pairs of the form (choice . weight)."
+  (cl-loop with total = (cl-reduce #'+ choices :key #'cdr)
+           with rnd = (random total)
+           for (choice . weight) in choices
+           if (< rnd weight)
+           return choice
+           else do (cl-decf rnd weight)))
 
 (defun luggage--show (name svg)
   "Display SVG in a buffer called NAME."
@@ -49,20 +72,15 @@
     (cl-labels ((split (u v)
                   (let ((p (/ (+ 33 (random 35)) 100.0)))
                     (floor (+ (* p u) (* (- 1 p) v)))))
-                (color ()
-                  (pcase (random 6)
-                    ((or 0 1 2) "white")
-                    (3 "yellow")
-                    (4 "red")
-                    (5 "blue")))
                 (canvas (a b c d)
                   (let ((w (- c a)) (h (- d b)))
                     (cond
                       ((or (and (< w mw) (< h mh))
                            (not (or (> w sw) (> h sh) (= (random 2) 0))))
-                       (svg-rectangle svg a b w h
-                                      :stroke-width 5 :stroke "black"
-                                      :fill-color (color)))
+                       (svg-rectangle
+                        svg a b w h
+                        :stroke-width 5 :stroke "black"
+                        :fill-color (luggage--sample luggage-mondrian-colors)))
                       ((< w mw)
                        (let ((y (split b d)))
                          (canvas a b c y)
