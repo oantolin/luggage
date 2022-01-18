@@ -26,6 +26,16 @@
 
 (require 'svg)
 
+(defun luggage--show (name svg)
+  "Display SVG in a buffer called NAME."
+  (let ((buf (get-buffer-create "*Mondrian*")))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (svg-print svg))
+      (image-mode))
+    (pop-to-buffer buf)))
+
 (defun lugagge-mondrian ()
   "Produce a random Mondrian-like image."
   (interactive)
@@ -64,10 +74,7 @@
                          (canvas a y x d)
                          (canvas x y c d)))))))
       (canvas 0 0 w h)
-      (let ((buf (get-buffer-create "*Mondrian*")))
-        (with-current-buffer buf (svg-insert-image svg))
-        (pop-to-buffer buf)))))
+      (luggage--show "*Mondrian*" svg))))
 
 (provide 'luggage)
 ;;; luggage.el ends here
-
