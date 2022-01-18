@@ -116,7 +116,7 @@ The argument should be a list of pairs of the form (choice . weight)."
   "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
   (interactive)
   (let ((svg (svg-create 400 400
-                         :stroke-width 3
+                         :stroke-width 4
                          :stroke-linecap "round"
                          :stroke-color "black")))
     (dotimes (x 40)
