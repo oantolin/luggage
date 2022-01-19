@@ -69,7 +69,7 @@ The argument should be a list of pairs of the form (choice . weight)."
       (let ((inhibit-read-only t))
         (erase-buffer)
         (svg-print svg))
-      (setq revert-buffer-function
+      (setq-local revert-buffer-function
             (let ((cmd (intern
                         (format "luggage-%s"
                                 (downcase (string-replace " " "-" name))))))
