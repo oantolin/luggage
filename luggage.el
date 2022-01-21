@@ -150,5 +150,72 @@ The argument should be a list of pairs of the form (choice . weight)."
           (svg-line svg (* 10 x) (* 10 (1+ y)) (* 10 (1+ x)) (* 10 y)))))
     (luggage--show "10-PRINT" svg)))
 
+(defun luggage--plan-tubes (m n)
+  "Generate a random tube arrangement of size M x N."
+  (let ((x (make-vector m nil))) ; 0r1\2=3|4J5L
+    (dotimes (i m) (setf (aref x i) (make-vector n -1)))
+    (cl-macrolet ((at (i j) `(aref (aref x ,i) ,j))
+                  (among (x &rest ys)
+                    `(or ,@(mapcar (lambda (y) `(= ,x ,y)) ys))))
+      (setf (at 0 0) (random 6))
+      (dotimes (j (1- n))
+        (setf (at 0 (1+ j))
+              (seq-random-elt
+               (if (among (at 0 j) 0 2 5) [1 2 4] [0 3 5]))))
+      (dotimes (i (1- m))
+        (setf (at (1+ i) 0)
+              (seq-random-elt
+               (if (among (at i 0) 0 1 3) [3 4 5] [0 1 2])))
+        (dotimes (j (1- n))
+          (setf (at (1+ i) (1+ j))
+                (if (among (at i (1+ j)) 0 1 3)
+                    (if (among (at (1+ i) j) 0 2 5)
+                        4
+                      (seq-random-elt [3 5]))
+                  (if (among (at (1+ i) j) 0 2 5)
+                      (seq-random-elt [1 2])
+                    0)))))
+      x)))
+
+(defun luggage--arc (svg x y r a b)
+  "Draw circular arc in SVG from angle A to B.
+The circle has center at (X,Y) and radius R."
+  (cl-flet ((pt (pair u)
+              (funcall pair
+                       (+ x (* r (cos (* (/ float-pi 180) u))))
+                       (- y (* r (sin (* (/ float-pi 180) u)))))))
+    (svg-path svg `((moveto (,(pt #'cons a)))
+                    (elliptical-arc ((,r ,r ,@(pt #'list b)))))
+              :fill "transparent")))
+
+(defun luggage-tubes ()
+  "Draw a random collection of tubes."
+  (interactive)
+  (let* ((svg (svg-create 400 400
+                          :stroke "black"
+                          :stroke-width 4
+                          :stroke-linecap "round"))
+         (plan (luggage--plan-tubes 20 20))
+         (tiles
+          (vector ; 0r1\2=3|4J5L
+           (lambda (i j)
+             (luggage--arc svg (* 20 (1+ j)) (* 20 (1+ i)) 20 90 180))
+           (lambda (i j)
+             (luggage--arc svg (* 20 j) (* 20 (1+ i)) 20 0 90))
+           (lambda (i j)
+             (svg-line svg (* 20 j) (* 20 i) (* 20 (1+ j)) (* 20 i))
+             (svg-line svg (* 20 j) (* 20 (1+ i)) (* 20 (1+ j)) (* 20 (1+ i))))
+           (lambda (i j)
+             (svg-line svg (* 20 j) (* 20 i) (* 20 j) (* 20 (1+ i)))
+             (svg-line svg (* 20 (1+ j)) (* 20 i) (* 20 (1+ j)) (* 20 (1+ i))))
+           (lambda (i j)
+             (luggage--arc svg (* 20 j) (* 20 i) 20 -90 0))
+           (lambda (i j)
+             (luggage--arc svg (* 20 (1+ j)) (* 20 i) 20 180 270)))))
+    (dotimes (i 20)
+      (dotimes (j 20)
+        (funcall (aref tiles (aref (aref plan i) j)) i j)))
+    (luggage--show "Tubes" svg)))
+
 (provide 'luggage)
 ;;; luggage.el ends here
