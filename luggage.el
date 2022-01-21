@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2022  Omar Antolín Camarena
 
-;; Author: Omar Antolín Camarena;; -*- lexical-binding: t; -*- <omar@matem.unam.mx>
-;; Keywords: games, hypermedia, hypermedia, hypermedia
+;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
+;; Keywords: games, hypermedia
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
