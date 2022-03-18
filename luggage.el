@@ -52,6 +52,10 @@
                   ("#484269" . 1)))
           (alist :key-type string :value-type integer)))
 
+(defcustom luggage-dominoes-size 10
+  "Size of domino tiling."
+  :type 'integer)
+
 (defun luggage--sample (choices)
   "Return a random selection from the weighted CHOICES.
 The argument should be a list of pairs of the form (choice . weight)."
@@ -252,24 +256,32 @@ The circle has center at (X,Y) and radius R."
 (defun luggage-dominoes ()
   "Draw a random tiling by dominoes."
   (interactive)
-  (let* ((n 10)
-         (svg (svg-create (* 20 n) (* 20 n)
+  (let* ((n luggage-dominoes-size)
+         (svg (svg-create (* 30 n) (* 30 n)
                           :stroke "black"
                           :stroke-width 3
                           :stroke-linecap "round"))
          (max-lisp-eval-depth 5000)
          (plan (luggage--plan-dominoes n n)))
-    (svg-rectangle svg 0 0 (* 20 n) (* 20 n) :fill-color "white")
+    (svg-rectangle svg 0 0 (* 30 n) (* 30 n) :fill-color "white")
     (cl-flet ((at (i j) (aref (aref plan i) j)))
       (dotimes (i n)
         (dotimes (j n)
           (when (and (< i (1- n)) (/= (at i j) (at (1+ i) j)))
             (svg-line
-             svg (* 20 j) (* 20 (1+ i)) (* 20 (1+ j)) (* 20 (1+ i))))
+             svg (* 30 j) (* 30 (1+ i)) (* 30 (1+ j)) (* 30 (1+ i))))
           (when (and (< j (1- n)) (/= (at i j) (at i (1+ j))))
             (svg-line
-             svg (* 20 (1+ j)) (* 20 i) (* 20 (1+ j)) (* 20 (1+ i)))))))
-    (luggage--show "Dominoes" svg)))
+             svg (* 30 (1+ j)) (* 30 i) (* 30 (1+ j)) (* 30 (1+ i)))))))
+    (with-current-buffer (luggage--show "Dominoes" svg)
+      (local-set-key "-" (lambda ()
+                           (interactive)
+                           (cl-decf luggage-dominoes-size)
+                           (revert-buffer)))
+      (local-set-key "+" (lambda ()
+                           (interactive)
+                           (cl-incf luggage-dominoes-size)
+                           (revert-buffer))))))
 
 (provide 'luggage)
 ;;; luggage.el ends here
