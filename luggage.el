@@ -217,5 +217,59 @@ The circle has center at (X,Y) and radius R."
         (funcall (aref tiles (aref (aref plan i) j)) i j)))
     (luggage--show "Tubes" svg)))
 
+(defun luggage--plan-dominoes (m n)
+  "Generate a random M x N domino tiling."
+  (let ((x (make-vector m nil))
+        (k 1))
+    (dotimes (i m) (setf (aref x i) (make-vector n 0)))
+    (cl-macrolet ((at (i j) `(aref (aref x ,i) ,j)))
+      (cl-labels
+          ((next (i j) (if (= j (1- n)) (fill (1+ i) 0) (fill i (1+ j))))
+           (place (i j r)
+             (if (= r 0)
+                 (and (< j (1- n)) (= (at i j) (at i (1+ j)) 0)
+                      (setf (at i j) k (at i (1+ j)) k k (1+ k)))
+               (and (< i (1- m)) (= (at i j) (at (1+ i) j) 0)
+                    (setf (at i j) k (at (1+ i) j) k k (1+ k)))))
+           (unplace (i j r)
+             (setq k (1- k))
+             (if (= r 0)
+                 (setf (at i j) 0 (at i (1+ j)) 0)
+               (setf (at i j) 0 (at (1+ i) j) 0))
+             nil)
+           (fill (i j)
+             (if (and (= i (1- m)) (= j (1- n)))
+                 x
+               (if (> (at i j) 0)
+                   (next i j)
+                 (let ((r (random 2)))
+                   (or (and (place i j r)
+                            (or (next i j) (unplace i j r)))
+                       (and (place i j (1- r))
+                            (or (next i j) (unplace i j (1- r))))))))))
+        (fill 0 0)))))
+
+(defun luggage-dominoes ()
+  "Draw a random tiling by dominoes."
+  (interactive)
+  (let* ((n 10)
+         (svg (svg-create (* 20 n) (* 20 n)
+                          :stroke "black"
+                          :stroke-width 3
+                          :stroke-linecap "round"))
+         (max-lisp-eval-depth 5000)
+         (plan (luggage--plan-dominoes n n)))
+    (svg-rectangle svg 0 0 (* 20 n) (* 20 n) :fill-color "white")
+    (cl-flet ((at (i j) (aref (aref plan i) j)))
+      (dotimes (i n)
+        (dotimes (j n)
+          (when (and (< i (1- n)) (/= (at i j) (at (1+ i) j)))
+            (svg-line
+             svg (* 20 j) (* 20 (1+ i)) (* 20 (1+ j)) (* 20 (1+ i))))
+          (when (and (< j (1- n)) (/= (at i j) (at i (1+ j))))
+            (svg-line
+             svg (* 20 (1+ j)) (* 20 i) (* 20 (1+ j)) (* 20 (1+ i)))))))
+    (luggage--show "Dominoes" svg)))
+
 (provide 'luggage)
 ;;; luggage.el ends here
