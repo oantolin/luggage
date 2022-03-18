@@ -259,11 +259,10 @@ The circle has center at (X,Y) and radius R."
   (let* ((n luggage-dominoes-size)
          (svg (svg-create (* 30 n) (* 30 n)
                           :stroke "black"
-                          :stroke-width 3
-                          :stroke-linecap "round"))
+                          :stroke-width 3))
          (max-lisp-eval-depth 5000)
          (plan (luggage--plan-dominoes n n)))
-    (svg-rectangle svg 0 0 (* 30 n) (* 30 n) :fill-color "white")
+    (svg-rectangle svg 0 0 (* 30 n) (* 30 n) :fill "transparent")
     (cl-flet ((at (i j) (aref (aref plan i) j)))
       (dotimes (i n)
         (dotimes (j n)
