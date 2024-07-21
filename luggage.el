@@ -282,5 +282,19 @@ The circle has center at (X,Y) and radius R."
                            (cl-incf luggage-dominoes-size)
                            (revert-buffer))))))
 
+(defun luggage-spot-painting ()
+  "Draw a random \"spot painting\" in the style of Damien Hirst."
+  (interactive)
+  (let* ((m (* 5 (+ 2 (random 6)))) (n 10)
+         (svg (svg-create (* 40 m) (* 40 n))))
+    (svg-rectangle svg 0 0 (* 40 m) (* 40 n) :fill-color "white")
+    (dotimes (i m)
+      (dotimes (j n)
+        (svg-circle
+         svg (+ 20 (* 10 (* 4 i))) (+ 20 (* 10 (* 4 j))) 10
+         :fill-color (format "#%02x%02x%02x"
+                             (random 256) (random 256) (random 256)))))
+    (luggage--show "Spot Painting" svg)))
+
 (provide 'luggage)
 ;;; luggage.el ends here
