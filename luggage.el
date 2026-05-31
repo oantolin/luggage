@@ -312,14 +312,14 @@ The circle has center at (X,Y) and radius R."
              (elliptical-arc ((,r ,r ,(h x r b) ,(v y r b))))))
          (tile (x y r j)
            (svg-polygon svg (hex x y r))
-           (svg-path
-            svg
-            (append
-             (arc (h x r (+ j 4)) (v y r (+ j 4)) (/ r 2) (+ j 2) j)
-             (arc (h x (* s r) (+ j 1.5)) (v y (* s r) (+ j 1.5)) (* 1.5 r) (+ j 5) (+ j 4))
-             (arc (h x (* s r) (+ j 0.5)) (v y (* s r) (+ j 0.5)) (* 1.5 r) (+ j 4) (+ j 3)))
-            :stroke-width 10
-            :stroke "gray")))
+           (dolist (arc (list
+                         (arc (h x r (+ j 4)) (v y r (+ j 4)) (/ r 2) (+ j 2) j)
+                         (arc (h x (* s r) (+ j 1.5)) (v y (* s r) (+ j 1.5))
+                              (* 1.5 r) (+ j 5) (+ j 4))
+                         (arc (h x (* s r) (+ j 0.5)) (v y (* s r) (+ j 0.5))
+                              (* 1.5 r) (+ j 4) (+ j 3))))
+             (svg-path svg arc :stroke-width 14 :stroke "white")
+             (svg-path svg arc :stroke-width 10 :stroke "gray"))))
       (dotimes (j (1+ n))
         (dotimes (i m)
           (tile (* r (+ (if (oddp j) 1.5 0) (* 3 i))) (* 0.5 r s j) r (random 6))))
