@@ -296,5 +296,34 @@ The circle has center at (X,Y) and radius R."
                              (random 256) (random 256) (random 256)))))
     (luggage--show "Spot Painting" svg)))
 
+(defun luggage-hexinuous ()
+  "Draw a hexagonal tiling with interesting curves."
+  (interactive)
+  (let* ((r 50) (m 10) (n 16) (s (sqrt 3))
+         (svg (svg-create (* r (1- (* 3 m))) (* 0.5 s r n)
+                          :stroke "black" :fill "transparent")))
+    (cl-flet*
+        ((h (x r a) (+ x (* r (cos (* a (/ float-pi 3))))))
+         (v (y r a) (+ y (* r (sin (* a (/ float-pi 3))))))
+         (hex (x y r)
+           (cl-loop for i below 6 collect (cons (h x r i) (v y r i))))
+         (arc (x y r a b)
+           `((moveto ((,(h x r a) . ,(v y r a))))
+             (elliptical-arc ((,r ,r ,(h x r b) ,(v y r b))))))
+         (tile (x y r j)
+           (svg-polygon svg (hex x y r))
+           (svg-path
+            svg
+            (append
+             (arc (h x r (+ j 4)) (v y r (+ j 4)) (/ r 2) (+ j 2) j)
+             (arc (h x (* s r) (+ j 1.5)) (v y (* s r) (+ j 1.5)) (* 1.5 r) (+ j 5) (+ j 4))
+             (arc (h x (* s r) (+ j 0.5)) (v y (* s r) (+ j 0.5)) (* 1.5 r) (+ j 4) (+ j 3)))
+            :stroke-width 10
+            :stroke "gray")))
+      (dotimes (j (1+ n))
+        (dotimes (i m)
+          (tile (* r (+ (if (oddp j) 1.5 0) (* 3 i))) (* 0.5 r s j) r (random 6))))
+      (luggage--show "Hexinuous" svg))))
+
 (provide 'luggage)
 ;;; luggage.el ends here
